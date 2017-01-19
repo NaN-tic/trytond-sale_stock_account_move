@@ -8,6 +8,7 @@ __all__ = ['Configuration', 'ConfigurationCompany']
 
 
 class Configuration:
+    __metaclass__ = PoolMeta
     __name__ = 'sale.configuration'
     __metaclass__ = PoolMeta
 
