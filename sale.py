@@ -13,6 +13,7 @@ _ZERO = Decimal('0.0')
 
 # TODO: put it in account_invoice_stock
 class StockMove:
+    __metaclass__ = PoolMeta
     __name__ = 'stock.move'
     __metaclass__ = PoolMeta
 
@@ -31,6 +32,7 @@ class StockMove:
 
 
 class Move:
+    __metaclass__ = PoolMeta
     __name__ = 'account.move'
     __metaclass__ = PoolMeta
 
@@ -43,12 +45,14 @@ class Move:
 
 
 class MoveLine:
+    __metaclass__ = PoolMeta
     __name__ = 'account.move.line'
     __metaclass__ = PoolMeta
     sale_line = fields.Many2One('sale.line', 'Sale Line')
 
 
 class Sale:
+    __metaclass__ = PoolMeta
     __name__ = 'sale.sale'
     __metaclass__ = PoolMeta
 
@@ -148,6 +152,7 @@ class Sale:
 
 
 class SaleLine:
+    __metaclass__ = PoolMeta
     __name__ = 'sale.line'
     __metaclass__ = PoolMeta
 
