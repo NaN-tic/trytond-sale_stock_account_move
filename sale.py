@@ -19,16 +19,20 @@ class StockMove:
 
     @property
     def posted_quantity(self):
-        'The quantity from linked invoice lines in move unit'
+        'The quantity from linked invoice lines in move unit and by invoice'
         pool = Pool()
         Uom = pool.get('product.uom')
-        quantity = 0
+        quantity = 0.0
+        invoice_quantity = {}
         for invoice_line in self.invoice_lines:
             if (invoice_line.invoice and
                     invoice_line.invoice.state in ('posted', 'paid')):
-                quantity += Uom.compute_qty(invoice_line.unit,
+                if invoice_line.invoice.id not in invoice_quantity:
+                    invoice_quantity[invoice_line.invoice.id] = 0.0
+                quantity = Uom.compute_qty(invoice_line.unit,
                     invoice_line.quantity, self.uom)
-        return quantity
+                invoice_quantity[invoice_line.invoice.id] += quantity
+        return invoice_quantity
 
 
 class Move:
@@ -288,13 +292,19 @@ class SaleLine:
         Uom = pool.get('product.uom')
 
         sign = -1 if self.quantity < 0.0 else 1
-        unposted_quantity = 0.0
+        posted_quantity = 0.0
+        sended_quantity = 0.0
+        invoice_quantity = {}
         for move in self.moves:
             if move.state != 'done':
                 continue
-            unposted_quantity += sign * Uom.compute_qty(move.uom,
-                move.quantity - (sign * move.posted_quantity), self.unit)
-        return unposted_quantity
+            sended_quantity += move.quantity
+            for invoice, quantity in move.posted_quantity.iteritems():
+                if invoice not in invoice_quantity:
+                    invoice_quantity[invoice] = quantity
+        posted_quantity = sum(invoice_quantity.values())
+        return sign * Uom.compute_qty(move.uom,
+            sended_quantity - posted_quantity, self.unit)
 
     def _set_analytic_lines(self, move_line):
         """
@@ -304,7 +314,8 @@ class SaleLine:
         pool = Pool()
         Date = pool.get('ir.date')
 
-        if not getattr(self, 'analytic_accounts', False):
+        if (not getattr(self, 'analytic_accounts', False) or
+                not self.analytic_accounts.accounts):
             return []
 
         AnalyticLine = pool.get('analytic_account.line')
