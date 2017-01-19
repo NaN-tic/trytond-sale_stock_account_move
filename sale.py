@@ -8,12 +8,12 @@ from trytond.pyson import Eval
 from trytond.transaction import Transaction
 
 __all__ = ['StockMove', 'Sale', 'SaleLine', 'Move', 'MoveLine']
-__metaclass__ = PoolMeta
 _ZERO = Decimal('0.0')
 
 
 # TODO: put it in account_invoice_stock
 class StockMove:
+    __metaclass__ = PoolMeta
     __name__ = 'stock.move'
 
     @property
@@ -35,6 +35,7 @@ class StockMove:
 
 
 class Move:
+    __metaclass__ = PoolMeta
     __name__ = 'account.move'
 
     @classmethod
@@ -46,11 +47,13 @@ class Move:
 
 
 class MoveLine:
+    __metaclass__ = PoolMeta
     __name__ = 'account.move.line'
     sale_line = fields.Many2One('sale.line', 'Sale Line')
 
 
 class Sale:
+    __metaclass__ = PoolMeta
     __name__ = 'sale.sale'
 
     @classmethod
@@ -149,6 +152,7 @@ class Sale:
 
 
 class SaleLine:
+    __metaclass__ = PoolMeta
     __name__ = 'sale.line'
 
     analytic_required = fields.Function(fields.Boolean("Require Analytics"),
