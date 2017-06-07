@@ -7,31 +7,9 @@ from trytond.pool import Pool, PoolMeta
 from trytond.pyson import Eval
 from trytond.transaction import Transaction
 
-__all__ = ['StockMove', 'Sale', 'SaleLine', 'Move', 'MoveLine']
+__all__ = ['Sale', 'SaleLine', 'Move', 'MoveLine']
+
 _ZERO = Decimal('0.0')
-
-
-# TODO: put it in account_invoice_stock
-class StockMove:
-    __metaclass__ = PoolMeta
-    __name__ = 'stock.move'
-
-    @property
-    def posted_quantity(self):
-        'The quantity from linked invoice lines in move unit and by invoice'
-        pool = Pool()
-        Uom = pool.get('product.uom')
-        quantity = 0.0
-        invoice_quantity = {}
-        for invoice_line in self.invoice_lines:
-            if (invoice_line.invoice and
-                    invoice_line.invoice.state in ('posted', 'paid')):
-                if invoice_line.invoice.id not in invoice_quantity:
-                    invoice_quantity[invoice_line.invoice.id] = 0.0
-                quantity = Uom.compute_qty(invoice_line.unit,
-                    invoice_line.quantity, self.uom)
-                invoice_quantity[invoice_line.invoice.id] += quantity
-        return invoice_quantity
 
 
 class Move:
@@ -49,6 +27,7 @@ class Move:
 class MoveLine:
     __metaclass__ = PoolMeta
     __name__ = 'account.move.line'
+
     sale_line = fields.Many2One('sale.line', 'Sale Line')
 
 
