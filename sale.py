@@ -212,17 +212,16 @@ class SaleLine:
             Decimal(unposted_shiped_quantity) * self.unit_price,
             self.sale.currency) if unposted_shiped_quantity else _ZERO
 
-        if amount_to_reconcile == _ZERO and not unposted_shiped_quantity:
+        if amount_to_reconcile == _ZERO and unposted_shiped_quantity:
             # no previous amount in pending invoice account nor pending to
             # invoice (and post) quantity => first time
             invoiced_amount = -pending_amount
         elif not unposted_shiped_quantity:
             # no pending to invoice and post quantity => invoiced all shiped
-            invoiced_amount = amount_to_reconcile
+            invoiced_amount = -amount_to_reconcile
         else:
             # invoiced partially shiped quantity
-            invoiced_amount = amount_to_reconcile - pending_amount
-            pending_amount = amount_to_reconcile - invoiced_amount
+            invoiced_amount = -(amount_to_reconcile + pending_amount)
 
         if pending_amount == amount_to_reconcile:
             return []
@@ -289,7 +288,7 @@ class SaleLine:
         Date = pool.get('ir.date')
 
         if (not getattr(self, 'analytic_accounts', False) or
-                not self.analytic_accounts.accounts):
+                not self.analytic_accounts.accounts): #  nomes data final anterior a la d'avui
             return []
 
         AnalyticLine = pool.get('analytic_account.line')
