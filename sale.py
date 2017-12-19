@@ -81,7 +81,7 @@ class Sale:
         Move = pool.get('account.move')
         MoveLine = pool.get('account.move.line')
 
-        if self.invoice_method in ['manual', 'order']:
+        if self.invoice_method != 'shipment':
             return
 
         config = Config(1)
@@ -239,7 +239,10 @@ class SaleLine:
             invoiced_amount = -pending_amount
         elif not unposted_shiped_quantity:
             # no pending to invoice and post quantity => invoiced all shiped
-            invoiced_amount = -amount_to_reconcile
+            if amount_to_reconcile > _ZERO:
+                invoiced_amount = amount_to_reconcile
+            else:
+                invoiced_amount = -amount_to_reconcile
         else:
             # invoiced partially shiped quantity
             invoiced_amount = -(amount_to_reconcile + pending_amount)
@@ -299,6 +302,9 @@ class SaleLine:
                 else:
                     invoice_quantity[invoice] += quantity
         posted_quantity = sum(invoice_quantity.values())
+        # in case split moves, posted quantity is greater than purchase quantity
+        if posted_quantity > self.quantity:
+            posted_quantity = self.quantity
         return sign * Uom.compute_qty(move.uom,
             sended_quantity - posted_quantity, self.unit)
 
