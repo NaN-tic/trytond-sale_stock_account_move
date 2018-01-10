@@ -1,6 +1,3 @@
-Version 4.2.0 - 2016-11-28
-* Bug fixes (see mercurial logs for details)
-
 Version 3.4.1 - 2015-01-19
 * Create analytic lines for created account moves
 * If analytic_sale and analytic_line_state are installed, set analytic flag

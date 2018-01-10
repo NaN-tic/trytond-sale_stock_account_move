@@ -15,7 +15,6 @@ _ZERO = Decimal('0.0')
 class StockMove:
     __metaclass__ = PoolMeta
     __name__ = 'stock.move'
-    __metaclass__ = PoolMeta
 
     @property
     def posted_quantity(self):
@@ -38,7 +37,6 @@ class StockMove:
 class Move:
     __metaclass__ = PoolMeta
     __name__ = 'account.move'
-    __metaclass__ = PoolMeta
 
     @classmethod
     def _get_origin(cls):
@@ -51,14 +49,12 @@ class Move:
 class MoveLine:
     __metaclass__ = PoolMeta
     __name__ = 'account.move.line'
-    __metaclass__ = PoolMeta
     sale_line = fields.Many2One('sale.line', 'Sale Line')
 
 
 class Sale:
     __metaclass__ = PoolMeta
     __name__ = 'sale.sale'
-    __metaclass__ = PoolMeta
 
     @classmethod
     def __setup__(cls):
@@ -85,7 +81,7 @@ class Sale:
         Move = pool.get('account.move')
         MoveLine = pool.get('account.move.line')
 
-        if self.invoice_method in ['manual', 'order']:
+        if self.invoice_method != 'shipment':
             return
 
         config = Config(1)
@@ -158,7 +154,6 @@ class Sale:
 class SaleLine:
     __metaclass__ = PoolMeta
     __name__ = 'sale.line'
-    __metaclass__ = PoolMeta
 
     analytic_required = fields.Function(fields.Boolean("Require Analytics"),
         'on_change_with_analytic_required')
@@ -225,7 +220,7 @@ class SaleLine:
             to_reconcile_line.account = pending_invoice_account
             if to_reconcile_line.account.party_required:
                 to_reconcile_line.party = self.sale.party
-            if amount_to_reconcile > Decimal('0.0'):
+            if amount_to_reconcile > _ZERO:
                 to_reconcile_line.credit = amount_to_reconcile
                 to_reconcile_line.debit = _ZERO
             else:
@@ -238,17 +233,19 @@ class SaleLine:
             Decimal(unposted_shiped_quantity) * self.unit_price,
             self.sale.currency) if unposted_shiped_quantity else _ZERO
 
-        if amount_to_reconcile == _ZERO and not unposted_shiped_quantity:
+        if amount_to_reconcile == _ZERO and unposted_shiped_quantity:
             # no previous amount in pending invoice account nor pending to
             # invoice (and post) quantity => first time
             invoiced_amount = -pending_amount
         elif not unposted_shiped_quantity:
             # no pending to invoice and post quantity => invoiced all shiped
-            invoiced_amount = amount_to_reconcile
+            if amount_to_reconcile > _ZERO:
+                invoiced_amount = amount_to_reconcile
+            else:
+                invoiced_amount = -amount_to_reconcile
         else:
             # invoiced partially shiped quantity
-            invoiced_amount = amount_to_reconcile - pending_amount
-            pending_amount = amount_to_reconcile - invoiced_amount
+            invoiced_amount = -(amount_to_reconcile + pending_amount)
 
         if pending_amount == amount_to_reconcile:
             return []
@@ -302,7 +299,12 @@ class SaleLine:
             for invoice, quantity in move.posted_quantity.iteritems():
                 if invoice not in invoice_quantity:
                     invoice_quantity[invoice] = quantity
+                else:
+                    invoice_quantity[invoice] += quantity
         posted_quantity = sum(invoice_quantity.values())
+        # in case split moves, posted quantity is greater than purchase quantity
+        if posted_quantity > self.quantity:
+            posted_quantity = self.quantity
         return sign * Uom.compute_qty(move.uom,
             sended_quantity - posted_quantity, self.unit)
 
@@ -319,19 +321,16 @@ class SaleLine:
             return []
 
         AnalyticLine = pool.get('analytic_account.line')
-        analytic_lines = []
-        for entry in self.analytic_accounts:
-            if not entry.account:
-                continue
+        move_line.analytic_lines = []
+        for account in self.analytic_accounts.accounts:
             line = AnalyticLine()
-            analytic_lines.append(line)
+            move_line.analytic_lines.append(line)
 
             line.name = self.description
             line.debit = move_line.debit
             line.credit = move_line.credit
-            line.account = entry.account
+            line.account = account
             line.journal = self.sale._get_accounting_journal()
             line.date = Date.today()
             line.reference = self.sale.reference
             line.party = self.sale.party
-        move_line.analytic_lines = analytic_lines

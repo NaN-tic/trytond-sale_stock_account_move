@@ -8,8 +8,7 @@ Imports::
     >>> from dateutil.relativedelta import relativedelta
     >>> from decimal import Decimal
     >>> from operator import attrgetter
-    >>> from proteus import Model, Wizard
-    >>> from trytond.tests.tools import activate_modules
+    >>> from proteus import config, Model, Wizard
     >>> from trytond.modules.company.tests.tools import create_company, \
     ...     get_company
     >>> from trytond.modules.account.tests.tools import create_fiscalyear, \
@@ -18,9 +17,17 @@ Imports::
     ...     set_fiscalyear_invoice_sequences, create_payment_term
     >>> today = datetime.date.today()
 
+Create database::
+
+    >>> config = config.set_trytond()
+    >>> config.pool.test = True
+
 Install sale::
 
-    >>> config = activate_modules('sale_stock_account_move')
+    >>> Module = Model.get('ir.module')
+    >>> module, = Module.find([('name', '=', 'sale_stock_account_move')])
+    >>> module.click('install')
+    >>> Wizard('ir.module.install_upgrade').execute('upgrade')
 
 Create company::
 
@@ -31,6 +38,7 @@ Reload the context::
 
     >>> User = Model.get('res.user')
     >>> Group = Model.get('res.group')
+    >>> config._context = User.get_preferences(True, config.context)
 
 Create sale user::
 
@@ -84,17 +92,17 @@ Create pending revenue and a second revenue account::
     >>> revenue2 = Account()
     >>> revenue2.code = 'R2'
     >>> revenue2.name = 'Second Revenue'
-    >>> revenue2.parent = revenue.parent
     >>> revenue2.type = revenue.type
     >>> revenue2.kind = 'revenue'
+    >>> revenue2.parent = revenue.parent
     >>> revenue2.save()
     >>> pending_receivable = Account()
     >>> pending_receivable.code = 'PR'
     >>> pending_receivable.name = 'Pending Receivable'
-    >>> pending_receivable.parent = receivable.parent
     >>> pending_receivable.type = receivable.type
     >>> pending_receivable.kind = 'receivable'
     >>> pending_receivable.reconcile = True
+    >>> pending_receivable.parent = receivable.parent
     >>> pending_receivable.save()
 
 Configure sale to track pending_receivables in accounting::
