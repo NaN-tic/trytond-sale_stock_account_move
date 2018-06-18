@@ -1,4 +1,4 @@
-# 
+#
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
 
@@ -10,13 +10,24 @@ msgstr ""
 "No se ha encontrado ninguna cuenta de importe pendiente de facturar. Por "
 "favor, defina una en la configuración de ventas."
 
-msgctxt "field:account.invoice.line,pending_out_invoice_account:"
-msgid "Pending Invoice Account"
-msgstr "Cuenta de facturas pendientes"
+msgctxt "error:sale.sale:"
+msgid ""
+"There is no Sale Journal defined. Please define one in sale configuration."
+msgstr ""
+"No se ha encontrado ningún diario de ventas. Por favor, defina uno en la "
+"configuración de ventas."
+
+msgctxt "field:account.move.line,sale_line:"
+msgid "Sale Line"
+msgstr "Línea de venta"
 
 msgctxt "field:sale.configuration,pending_invoice_account:"
 msgid "Pending Invoice Account"
 msgstr "Cuenta de facturas pendientes"
+
+msgctxt "field:sale.configuration,sale_journal:"
+msgid "Sale Journal"
+msgstr "Diario de venda"
 
 msgctxt "field:sale.configuration.company,company:"
 msgid "Company"
@@ -42,6 +53,10 @@ msgctxt "field:sale.configuration.company,rec_name:"
 msgid "Name"
 msgstr "Nombre"
 
+msgctxt "field:sale.configuration.company,sale_journal:"
+msgid "Sale Journal"
+msgstr "Diario de venda"
+
 msgctxt "field:sale.configuration.company,write_date:"
 msgid "Write Date"
 msgstr "Fecha modificación"
@@ -49,6 +64,16 @@ msgstr "Fecha modificación"
 msgctxt "field:sale.configuration.company,write_uid:"
 msgid "Write User"
 msgstr "Usuario modificación"
+
+msgctxt "field:sale.line,analytic_required:"
+msgid "Require Analytics"
+msgstr "Requiere Analytics"
+
+msgctxt "help:sale.configuration,sale_journal:"
+msgid "Journal to be used when creating account moves from sale shipments."
+msgstr ""
+"Diario que se debe utilizar cuando se crea un asiento contable desde el "
+"envío de la venta."
 
 msgctxt "model:sale.configuration.company,name:"
 msgid "Sale Configuration per Company"

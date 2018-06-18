@@ -1,4 +1,4 @@
-# 
+#
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
 
@@ -7,16 +7,27 @@ msgid ""
 "There is no Pending Invoice Account Defined. Please define one in sale "
 "configuration."
 msgstr ""
-"No s'ha trobat cap compte d'import pendent de facturar. Sisplau, defini-n'hi"
-" un a la configuració de les vendes. "
+"No s'ha trobat cap compte d'import pendent de facturar. Si us plau, "
+"defineix-hi un a la configuració de les vendes."
 
-msgctxt "field:account.invoice.line,pending_out_invoice_account:"
-msgid "Pending Invoice Account"
-msgstr "Compte factures pendents"
+msgctxt "error:sale.sale:"
+msgid ""
+"There is no Sale Journal defined. Please define one in sale configuration."
+msgstr ""
+"No s'ha trobat cap diari de vendes. Si us plau, defineix-hi un a la "
+"configuració de les vendes. "
+
+msgctxt "field:account.move.line,sale_line:"
+msgid "Sale Line"
+msgstr "Línia de venda"
 
 msgctxt "field:sale.configuration,pending_invoice_account:"
 msgid "Pending Invoice Account"
 msgstr "Compte factures pendents"
+
+msgctxt "field:sale.configuration,sale_journal:"
+msgid "Sale Journal"
+msgstr "Diari de venda"
 
 msgctxt "field:sale.configuration.company,company:"
 msgid "Company"
@@ -42,6 +53,10 @@ msgctxt "field:sale.configuration.company,rec_name:"
 msgid "Name"
 msgstr "Nom"
 
+msgctxt "field:sale.configuration.company,sale_journal:"
+msgid "Sale Journal"
+msgstr "Diari de venda"
+
 msgctxt "field:sale.configuration.company,write_date:"
 msgid "Write Date"
 msgstr "Data modificació"
@@ -49,6 +64,16 @@ msgstr "Data modificació"
 msgctxt "field:sale.configuration.company,write_uid:"
 msgid "Write User"
 msgstr "Usuari modificació"
+
+msgctxt "field:sale.line,analytic_required:"
+msgid "Require Analytics"
+msgstr "Requerir Analytics"
+
+msgctxt "help:sale.configuration,sale_journal:"
+msgid "Journal to be used when creating account moves from sale shipments."
+msgstr ""
+"Diari que s'ha d'utilitzar quan es crea un assentament comptable des de "
+"l'enviament de la venda."
 
 msgctxt "model:sale.configuration.company,name:"
 msgid "Sale Configuration per Company"

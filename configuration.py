@@ -16,6 +16,12 @@ class Configuration:
             domain=[
                 ('kind', '!=', 'view'),
                 ]), 'get_company_config', 'set_company_config')
+    sale_journal = fields.Function(fields.Many2One(
+            'account.journal', 'Sale Journal', required=True,
+            domain=[
+                ('type', '=', 'revenue')
+            ], help='Journal to be used when creating account moves from sale '
+            'shipments.'), 'get_company_config', 'set_company_config')
 
     @classmethod
     def get_company_config(self, configs, names):
@@ -66,4 +72,9 @@ class ConfigurationCompany(ModelSQL):
         'Pending Invoice Account',
             domain=[
                 ('kind', '!=', 'view'),
+                ])
+    sale_journal = fields.Many2One(
+        'account.journal', 'Sale Journal',
+            domain=[
+                ('type', '=', 'revenue')
                 ])

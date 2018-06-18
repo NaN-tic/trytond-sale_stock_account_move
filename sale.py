@@ -63,6 +63,8 @@ class Sale:
                 'no_pending_invoice_account': ('There is no Pending Invoice '
                     'Account Defined. Please define one in sale '
                     'configuration.'),
+                'no_sale_journal': ('There is no Sale Journal defined. '
+                    'Please define one in sale configuration.'),
                 })
 
     @classmethod
@@ -141,9 +143,15 @@ class Sale:
     def _get_accounting_journal(self):
         pool = Pool()
         Journal = pool.get('account.journal')
+        Config = pool.get('sale.configuration')
+        config = Config(1)
+
+        if not config.sale_journal:
+            self.raise_user_error('no_sale_journal')
+
         journals = Journal.search([
-                ('type', '=', 'revenue'),
-                ], limit=1)
+                    ('id', '=', config.sale_journal.id),
+                    ])
         if journals:
             journal, = journals
         else:
