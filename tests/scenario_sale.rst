@@ -112,6 +112,7 @@ Create chart of accounts::
 
     >>> AccountTemplate = Model.get('account.account.template')
     >>> Account = Model.get('account.account')
+    >>> Journal = Model.get('account.journal')
     >>> account_template, = AccountTemplate.find([('parent', '=', None)])
     >>> create_chart = Wizard('account.create_chart')
     >>> create_chart.execute('account')
@@ -154,6 +155,9 @@ Create chart of accounts::
     >>> create_chart.form.account_receivable = receivable
     >>> create_chart.form.account_payable = payable
     >>> create_chart.execute('create_properties')
+    >>> journal_revenue, = Journal.find([
+    ...         ('type', '=', 'revenue'),
+    ...         ])
 
 Configure sale to track pending_receivables in accounting::
 
@@ -162,6 +166,7 @@ Configure sale to track pending_receivables in accounting::
     >>> sale_config.sale_shipment_method = 'order'
     >>> sale_config.sale_invoice_method = 'shipment'
     >>> sale_config.pending_invoice_account = pending_receivable
+    >>> sale_config.sale_journal = journal_revenue
     >>> sale_config.save()
 
 Create parties::
@@ -563,4 +568,3 @@ Open customer credit note::
     ...     ])
     >>> len(account_moves) == 0
     True
-

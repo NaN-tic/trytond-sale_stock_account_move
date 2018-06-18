@@ -5,5 +5,7 @@
     <xpath expr="/form" position="inside">
         <label name="pending_invoice_account" />
         <field name="pending_invoice_account" />
+        <label name="sale_journal"/>
+        <field name="sale_journal"/>
     </xpath>
 </data>
