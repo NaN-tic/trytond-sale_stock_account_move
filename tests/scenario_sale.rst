@@ -9,6 +9,7 @@ Imports::
     >>> from decimal import Decimal
     >>> from operator import attrgetter
     >>> from proteus import config, Model, Wizard
+    >>> from trytond.tests.tools import activate_modules
     >>> from trytond.modules.company.tests.tools import create_company, \
     ...     get_company
     >>> from trytond.modules.account.tests.tools import create_fiscalyear, \
@@ -17,17 +18,9 @@ Imports::
     ...     set_fiscalyear_invoice_sequences, create_payment_term
     >>> today = datetime.date.today()
 
-Create database::
+Activate sale_stock_account_move::
 
-    >>> config = config.set_trytond()
-    >>> config.pool.test = True
-
-Install sale::
-
-    >>> Module = Model.get('ir.module')
-    >>> module, = Module.find([('name', '=', 'sale_stock_account_move')])
-    >>> module.click('install')
-    >>> Wizard('ir.module.install_upgrade').execute('upgrade')
+    >>> config = activate_modules('sale_stock_account_move')
 
 Create company::
 
@@ -134,7 +127,6 @@ Create products::
     >>> unit, = ProductUom.find([('name', '=', 'Unit')])
     >>> ProductTemplate = Model.get('product.template')
     >>> Product = Model.get('product.product')
-    >>> product1 = Product()
     >>> template1 = ProductTemplate()
     >>> template1.name = 'product'
     >>> template1.category = category
@@ -143,13 +135,11 @@ Create products::
     >>> template1.purchasable = True
     >>> template1.salable = True
     >>> template1.list_price = Decimal('15')
-    >>> template1.cost_price = Decimal('10')
     >>> template1.cost_price_method = 'fixed'
     >>> template1.account_expense = expense
     >>> template1.account_revenue = revenue
     >>> template1.save()
-    >>> product1.template = template1
-    >>> product1.save()
+    >>> product1, = template1.products
     >>> template2 = ProductTemplate()
     >>> template2.name = 'product'
     >>> template2.category = category
@@ -158,15 +148,11 @@ Create products::
     >>> template2.purchasable = True
     >>> template2.salable = True
     >>> template2.list_price = Decimal('25')
-    >>> template2.cost_price = Decimal('12')
     >>> template2.cost_price_method = 'fixed'
     >>> template2.account_expense = expense
     >>> template2.account_revenue = revenue2
     >>> template2.save()
-    >>> product2 = Product()
-    >>> product2.template = template2
-    >>> product2.save()
-    >>> service_product = Product()
+    >>> product2, = template2.products
     >>> service_template = ProductTemplate()
     >>> service_template.name = 'product'
     >>> service_template.category = category
@@ -175,13 +161,11 @@ Create products::
     >>> service_template.purchasable = True
     >>> service_template.salable = True
     >>> service_template.list_price = Decimal('15')
-    >>> service_template.cost_price = Decimal('10')
     >>> service_template.cost_price_method = 'fixed'
     >>> service_template.account_expense = expense
     >>> service_template.account_revenue = revenue
     >>> service_template.save()
-    >>> service_product.template = service_template
-    >>> service_product.save()
+    >>> service_product, = service_template.products
 
 Create payment term::
 

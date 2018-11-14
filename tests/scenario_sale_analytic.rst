@@ -9,6 +9,7 @@ Imports::
     >>> from decimal import Decimal
     >>> from operator import attrgetter
     >>> from proteus import config, Model, Wizard
+    >>> from trytond.tests.tools import activate_modules
     >>> from trytond.modules.company.tests.tools import create_company, \
     ...     get_company
     >>> from trytond.modules.account.tests.tools import create_fiscalyear, \
@@ -17,18 +18,9 @@ Imports::
     ...     set_fiscalyear_invoice_sequences, create_payment_term
     >>> today = datetime.date.today()
 
-Create database::
+Activate_sale_stock_account_move and analytic_sale::
 
-    >>> config = config.set_trytond()
-    >>> config.pool.test = True
-
-Install sale::
-
-    >>> Module = Model.get('ir.module')
-    >>> sale_module, = Module.find([('name', '=', 'sale_stock_account_move')])
-    >>> analytic_module, = Module.find([('name', '=', 'analytic_sale')])
-    >>> Module.install([sale_module.id, analytic_module.id], config.context)
-    >>> Wizard('ir.module.install_upgrade').execute('upgrade')
+    >>> config = activate_modules(['analytic_sale', 'sale_stock_account_move'])
 
 Create company::
 
@@ -95,7 +87,6 @@ Create pending revenue and a second revenue account::
     >>> revenue2.name = 'Second Revenue'
     >>> revenue2.type = revenue.type
     >>> revenue2.kind = 'revenue'
-    >>> revenue2.parent = revenue.parent
     >>> revenue2.save()
     >>> pending_receivable = Account()
     >>> pending_receivable.code = 'PR'
@@ -103,7 +94,6 @@ Create pending revenue and a second revenue account::
     >>> pending_receivable.type = receivable.type
     >>> pending_receivable.kind = 'receivable'
     >>> pending_receivable.reconcile = True
-    >>> pending_receivable.parent = receivable.parent
     >>> pending_receivable.save()
 
 Create analytic accounts::
@@ -259,7 +249,7 @@ Sale products::
     True
     >>> analytic_account.reload()
     >>> analytic_account.credit
-    Decimal('0.0')
+    Decimal('0.00')
 
 Validate Shipments::
 
